@@ -1,0 +1,167 @@
+#include <SoftwareSerial.h>               
+SoftwareSerial gsm(10,11);  //RX, TX
+
+const int trigPin = 2;
+const int echoPin = 3;
+const int trigPin1 = 4;
+const int echoPin1 = 5;
+const int trigPin2 = 6;
+const int echoPin2 = 7;
+const int trigPin3 = 8;
+const int echoPin3 = 9;
+int rfid[13];
+String inputString = ""; 
+#define SOUND_VELOCITY 0.34
+#define CM_TO_INCH 0.393701
+long duration;
+long duration1;
+long duration2;
+long duration3;
+float distanceCm1;
+float distanceCm2;
+float distanceCm3;
+float distanceCm4;
+ 
+  
+int i = 0;   int k= 0;   
+void setup()
+{
+
+
+Serial.begin(9600); // Starts the serial communication
+gsm.begin(9600);
+pinMode(trigPin, OUTPUT); // Sets the trigPin as an Output
+pinMode(echoPin, INPUT); // Sets the echoPin as an Input
+pinMode(trigPin1, OUTPUT); // Sets the trigPin as an Output
+pinMode(echoPin1, INPUT);
+pinMode(trigPin2, OUTPUT); // Sets the trigPin as an Output
+pinMode(echoPin2, INPUT);
+pinMode(trigPin3, OUTPUT); // Sets the trigPin as an Output
+pinMode(echoPin3, INPUT);
+
+
+}
+
+void loop()
+{
+
+
+    while (Serial.available()) {
+    rfid[0]=Serial.read();
+    rfid[1]=Serial.read();
+    rfid[2]=Serial.read();
+    rfid[3]=Serial.read();
+    rfid[4]=Serial.read();
+    rfid[5]=Serial.read();
+    rfid[6]=Serial.read();
+    rfid[7]=Serial.read();
+    rfid[8]=Serial.read();
+    rfid[9]=Serial.read();
+    rfid[10]=Serial.read();
+    rfid[11]=Serial.read();
+
+//
+Serial.print(rfid[9]);
+
+if(rfid[9]=='8')
+{
+  Serial.println("EMERGENCY"); 
+   gsm.println("E");      
+  //Serial.println("E");                      
+  }
+}
+
+  
+
+  digitalWrite(trigPin, LOW);  
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);  
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);  
+  duration = pulseIn(echoPin, HIGH);
+  distanceCm1 = duration * SOUND_VELOCITY/2;
+  int fl2=distanceCm1;
+  
+  digitalWrite(trigPin1, LOW);
+  delayMicroseconds(2);  
+  digitalWrite(trigPin1, HIGH);
+  delayMicroseconds(10); 
+  digitalWrite(trigPin1, LOW);
+  duration1 = pulseIn(echoPin1, HIGH);
+  distanceCm2 = duration1 * SOUND_VELOCITY/2;
+  int fl3=distanceCm2; 
+ 
+
+  digitalWrite(trigPin2, LOW);
+  delayMicroseconds(2);  
+  digitalWrite(trigPin2, HIGH);
+  delayMicroseconds(10); 
+  digitalWrite(trigPin2, LOW);
+  duration2 = pulseIn(echoPin2, HIGH);
+  distanceCm3 = duration2 * SOUND_VELOCITY/2;
+  int fl4=distanceCm3; 
+
+  digitalWrite(trigPin3, LOW);
+  delayMicroseconds(2);  
+  digitalWrite(trigPin3, HIGH);
+  delayMicroseconds(10); 
+  digitalWrite(trigPin3, LOW);
+  duration3 = pulseIn(echoPin3, HIGH);
+  distanceCm4 = duration3 * SOUND_VELOCITY/2;
+  int fl5=distanceCm4; 
+
+
+  
+//Serial.println(fl2);
+//Serial.println(fl3);
+//Serial.println(fl4);
+//Serial.println(fl5);
+delay(800); 
+
+if(fl2<50 && k==0)
+{
+  k++;
+    Serial.println("EAST ROAD HEAVY TRAFFIC"); 
+    gsm.println("A");                  
+}
+if(fl2>50)
+{
+k=0;                
+}
+
+if(fl3<50 && k==0)
+{
+k++; Serial.println("WEST ROAD HEAVY TRAFFIC");      gsm.println("B");                      
+}
+if(fl3>50)
+{
+k=0;                
+}
+
+if(fl4<50 && k==0)
+{
+k++; 
+Serial.println("NORTH ROAD HEAVY TRAFFIC");       gsm.println("C");                     
+}
+if(fl4>50)
+{
+k=0;                
+}
+
+if(fl5<50 && k==0)
+{
+k++; Serial.println("SOUTH ROAD HEAVY TRAFFIC");      gsm.println("D");                      
+}
+if(fl5>50)
+{
+k=0;                
+}
+
+
+if(analogRead(A0)<50)
+{
+   Serial.println("FIRE DETECT");     
+   delay(5000);                  
+}
+
+}
